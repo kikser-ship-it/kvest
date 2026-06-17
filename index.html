@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Квест | День рождения</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            padding: 20px;
+        }
+
+        .card {
+            max-width: 550px;
+            width: 100%;
+            background: #1a1a1a;
+            border-radius: 40px;
+            padding: 35px 25px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), 0 0 0 2px #8b0000;
+            text-align: center;
+            border: 1px solid #cc0000;
+        }
+
+        h1 {
+            color: #ff3333;
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        .stage-badge {
+            background: #2a0000;
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #ff6666;
+            margin: 10px 0 20px;
+            border: 1px solid #cc0000;
+        }
+
+        .task-text {
+            text-align: left;
+            font-size: 17px;
+            line-height: 1.5;
+            color: #e0e0e0;
+            margin: 15px 0 20px;
+            background: #0f0f0f;
+            padding: 22px;
+            border-radius: 28px;
+            border-left: 4px solid #cc0000;
+        }
+
+        .task-text p {
+            margin-bottom: 12px;
+        }
+
+        .highlight-red {
+            background: #8b0000;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-weight: 600;
+            color: white;
+            display: inline-block;
+        }
+
+        .code-area {
+            margin: 20px 0;
+        }
+
+        .code-area label {
+            color: #ff9999;
+            font-size: 14px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            font-size: 18px;
+            border: 2px solid #cc0000;
+            border-radius: 60px;
+            outline: none;
+            text-align: center;
+            background: #0a0a0a;
+            color: white;
+            font-family: monospace;
+        }
+
+        input:focus {
+            border-color: #ff3333;
+            box-shadow: 0 0 8px rgba(255, 51, 51, 0.3);
+        }
+
+        button {
+            background: #8b0000;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            width: 100%;
+            font-size: 17px;
+            font-weight: 600;
+            border-radius: 60px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        .error {
+            color: #ff6666;
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+            background: #2a0000;
+            padding: 8px;
+            border-radius: 30px;
+        }
+
+        .congrats {
+            text-align: center;
+        }
+
+        .congrats h2 {
+            color: #ff3333;
+            margin: 20px 0;
+            font-size: 28px;
+        }
+
+        .congrats p {
+            color: #ddd;
+            margin: 15px 0;
+            font-size: 18px;
+        }
+
+        footer {
+            margin-top: 25px;
+            font-size: 10px;
+            color: #884444;
+            border-top: 1px solid #331111;
+            padding-top: 15px;
+        }
+
+        .emoji-big {
+            font-size: 50px;
+            margin: 20px 0;
+        }
+
+        .hint-block {
+            background: #1a0a0a;
+            border: 1px dashed #aa2222;
+            padding: 12px;
+
+
+border-radius: 20px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #cc8888;
+            text-align: left;
+        }
+
+        .hint-title {
+            color: #ff6666;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card" id="app"></div>
+
+    <script>
+        // ========== 6 ЭТАПОВ КВЕСТА ==========
+        var stages = {
+            1: {
+                title: "ЭТАП 1",
+                location: "Наша квартира",
+                task: "Первый код спрятан в том, что ты больше всего любишь (крупа). Найди записку с кодом и введи его ниже.",
+                code: "1111",
+                hint: "Простая арифметика"
+            },
+            2: {
+                title: "ЭТАП 2",
+                location: "Цветочный магазин",
+                task: "Теперь иди в цветочный магазин (тот, где я обычно беру тебе цветы). Спроси у продавца 'кодовую ромашку' — тебе дадут конверт с кодом.",
+                code: "chamomile",
+                hint: "А я говорил тебе, учи английский"
+            },
+            3: {
+                title: "ЭТАП 3",
+                location: "Добровольского",
+                task: "Отправляйся на Добровольского. Код спрятан где-то там. Саша в курсе, она тебе поможет.",
+                code: "оранжевый",
+                hint: "Думай сама"
+            },
+            4: {
+                title: "ЭТАП 4",
+                location: "Детский парк",
+                task: "Иди в детский парк. Найди человека в чёрных очках. У него есть то, что тебе нужно.",
+                code: "love",
+                hint: "Опять английский"
+            },
+            5: {
+                title: "ЭТАП 5",
+                location: "Горького",
+                task: "Теперь на Горького. Код спрятан у самого важного человека. Мама знает, не переживай.",
+                code: "хэнк",
+                hint: "Ты должна знать"
+            },
+            6: {
+                title: "ЭТАП 6 — ФИНАЛ!",
+                location: "Наша квартира",
+                task: "Возвращайся домой. Поищи там. Там лежит последний конверт. Введи код — и узнаешь, где подарок!",
+                code: "8",
+                hint: "Тут должно быть просто",
+                isFinal: true,
+                finalMessage: "Твой подарок ждёт тебя в зале на столе. С днём рождения, моя любовь!"
+            }
+        };
+
+        var totalStages = 6;
+
+        function getParam(name) {
+            var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
+            if (results) {
+                return results[1];
+            }
+            return null;
+        }
+
+        function getStageFromURL() {
+            var stageParam = getParam('stage');
+            if (stageParam) {
+                var num = parseInt(stageParam, 10);
+                if (!isNaN(num) && num >= 1 && num <= totalStages) {
+                    return num;
+                }
+            }
+            return 1;
+        }
+
+        function showFinal(stage) {
+            var container = document.getElementById('app');
+            var html = '<div class="congrats">';
+            html += '<h1 style="color:#ff3333;">🏆 ПОЗДРАВЛЯЮ! 🏆</h1>';
+            html += '<p>❤️ ТЫ ПРОШЛА ВЕСЬ КВЕСТ! ❤️</p>';
+            html += '<p>' + stage.finalMessage + '</p>';
+            html += '<div class="emoji-big">🎂🖤❤️🥳🎁</div>';
+            html += '</div>';
+            html += '<footer>❤️ Спасибо за игру! ❤️</footer>';
+            container.innerHTML = html;
+        }
+
+        function showStage(stageId) {
+            var container = document.getElementById('app');
+            var stage = stages[stageId];
+
+            if (!stage) {
+                window.location.href = '?stage=1';
+                return;
+            }
+
+            var html = '';
+            html += '<h1 style="color:#ff3333;">🗝️ ' + stage.title + ' 🗝️</h1>';
+            html += '<div class="stage-badge">📍 ' + stage.location +
+
+
+'</div>';
+            html += '<div class="task-text"><p>' + stage.task + '</p></div>';
+            html += '<div class="code-area">';
+            html += '<label>🔐 ВВЕДИ НАЙДЕННЫЙ КОД:</label>';
+            html += '<input type="text" id="codeInput" placeholder="код" autocomplete="off">';
+            html += '<button id="submitBtn">⚡ ПРОВЕРИТЬ ⚡</button>';
+            html += '<div class="error" id="errorMsg">❌ Неверный код. Попробуй ещё раз ❌</div>';
+            html += '<button id="hintBtn" style="background:#440000; margin-top:10px;">🔮 ПОДСКАЗКА</button>';
+            html += '<div id="hintBox" style="background:#1a0a0a; border:1px solid #882222; border-radius:20px; padding:12px; margin-top:12px; display:none; font-size:13px; color:#dd8888; text-align:left;">';
+            html += '💡 ' + stage.hint;
+            html += '</div></div>';
+            html += '<footer>вводи код в точности как на записке</footer>';
+
+            container.innerHTML = html;
+
+            var input = document.getElementById('codeInput');
+            var submitBtn = document.getElementById('submitBtn');
+            var errorDiv = document.getElementById('errorMsg');
+            var hintBtn = document.getElementById('hintBtn');
+            var hintBox = document.getElementById('hintBox');
+
+            function checkCode() {
+                var userCode = input.value.trim().toLowerCase();
+                var correctCode = stage.code.toString().toLowerCase();
+
+                if (userCode === correctCode) {
+                    if (stage.isFinal) {
+                        showFinal(stage);
+                    } else {
+                        window.location.href = '?stage=' + (stageId + 1);
+                    }
+                } else {
+                    errorDiv.style.display = 'block';
+                    setTimeout(function() {
+                        errorDiv.style.display = 'none';
+                    }, 2000);
+                }
+            }
+
+            submitBtn.addEventListener('click', checkCode);
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') checkCode();
+            });
+
+            hintBtn.addEventListener('click', function() {
+                if (hintBox.style.display === 'none' || hintBox.style.display === '') {
+                    hintBox.style.display = 'block';
+                    hintBtn.textContent = '🙈 СПРЯТАТЬ ПОДСКАЗКУ';
+                } else {
+                    hintBox.style.display = 'none';
+                    hintBtn.textContent = '🔮 ПОДСКАЗКА';
+                }
+            });
+        }
+
+        var currentStage = getStageFromURL();
+        showStage(currentStage);
+    </script>
+</body>
+</html>
+
+
